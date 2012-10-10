@@ -10,12 +10,12 @@ The weatherIRL plugin allows you to sync the weather in your Bukkit server with 
 
 The commands added by this plugin are:
 
-    /syncweather    [location]                              : teleport to a custom location
-    /syncattributes   [attribute1(,attribute2,attribute3...)]    	     : define a custom location (where you're standing)
-    /stopweathersync                              : remove a custom location
-    /forecast                                            : view all locations in the system
+    /syncweather      [location]                              : choose a location and begin syncing weather
+    /syncattributes   [attribute1(,attribute2,attribute3...)] : choose which weather attributes to sync*
+    /stopweathersync                                          : stop syncing weather with the location
+    /forecast                                                 : view predicted weather for the location
 
-    Attributes that can be included: rainandsnow, storms, clouds, daycycle.
+    *Attributes that can be included: rainandsnow, storms, clouds, daycycle.  By default, all attributes are synced.
 
 This plugin is still in its early stages, as a number of new features and cleaned-up interfaces will soon be added.  Visit <http://github.com/ofallonminecraft/weatherIRL> for the lastest code!
 
