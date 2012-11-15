@@ -10,6 +10,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class Wirl extends JavaPlugin
 {
+	boolean syncing = false; // enable syncing on reload and startup?
+							 // base this on previous condition of this variable?
 
 
 
@@ -74,7 +76,23 @@ public class Wirl extends JavaPlugin
 				e.printStackTrace();
 				return false;
 			}
-			sender.sendMessage(RSSReader.rssReader("Forecast:", woeid));
+			if (woeid.length()==0) {
+				sender.sendMessage("You must set a location first! Use /setlocation [location]");
+			} else {
+				sender.sendMessage(RSSReader.rssReader("Forecast:", woeid));
+			}
+			return true;
+		}
+		
+		// SyncWeather
+		if (cmd.getName().equalsIgnoreCase("syncweather")) {
+			if (woeid.length()==0) {
+				sender.sendMessage("You must set a location first! Use /setlocation [location]");
+			} else {
+				sender.sendMessage("Starting weather syncing");
+			}
+			syncing = true;
+			// start up repeating syncing task
 			return true;
 		}
 
