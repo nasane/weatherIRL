@@ -2,6 +2,7 @@ package com.ofallonminecraft.weatherIRL;
 
 
 import java.io.File;
+import java.io.IOException;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -77,7 +78,7 @@ public class Wirl extends JavaPlugin
 				return false;
 			}
 			if (woeid.length()==0) {
-				sender.sendMessage("You must set a location first! Use /setlocation [location]");
+				sender.sendMessage("You must set a location first! Use /syncweather [location]");
 			} else {
 				sender.sendMessage(RSSReader.rssReader("Forecast:", woeid));
 			}
@@ -86,16 +87,52 @@ public class Wirl extends JavaPlugin
 		
 		// SyncWeather
 		if (cmd.getName().equalsIgnoreCase("syncweather")) {
-			if (woeid.length()==0) {
-				sender.sendMessage("You must set a location first! Use /setlocation [location]");
-			} else {
-				sender.sendMessage("Starting weather syncing");
+			if (args.length==0) {
+				sender.sendMessage("You must choose a location! Use /syncweather [location]");
+				return false;
 			}
+			String location = "";
+			for (int i=0; i<args.length; ++i) {
+				// append all arguments into one string (the location)
+				location+=args[i]+" ";
+			}
+			try {
+				woeid = FindWOEID.findWOEID(location);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			sender.sendMessage("Starting weather syncing for "+location+".");
 			syncing = true;
-			// start up repeating syncing task
+			// START UP REPEATING SYNCING TASK
 			return true;
 		}
 
+		// StopWeatherSync
+		if (cmd.getName().equalsIgnoreCase("stopweathersync")) {
+			if (!syncing) {
+				sender.sendMessage("No weather syncing is currently taking place!");
+				return false;
+			}
+			sender.sendMessage("Stopping weather syncing.");
+			woeid = "";        // find a better way to do this, make it so syncweather
+			syncing = false;   // doesn't require a location if one has already been stored?
+			// STOP REPEATING SYNCING TASK
+			return true;
+		}
+		
+		// SyncAttributes
+		if (cmd.getName().equalsIgnoreCase("syncattributes")) {
+			if (args.length==0) {
+				sender.sendMessage("Must choose attributes!");
+				return false;
+			}
+			for (int i=0; i<args.length; ++i) {   // append all chosen attributes (if they are valid)
+				// PUT CODE IN HERE
+				return true;
+			}
+			return true;
+		}
+		
 		return false;
 	}
 	// --------- END HANDLE THE COMMANDS ---------- //
