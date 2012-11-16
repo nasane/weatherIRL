@@ -3,6 +3,7 @@ package com.ofallonminecraft.weatherIRL;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -12,13 +13,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class Wirl extends JavaPlugin
 {
 	boolean syncing = false; // enable syncing on reload and startup?
-							 // base this on previous condition of this variable?
+	// base this on previous condition of this variable?
 
 
 
 	// ---------- INITIALIZE HASMAPS TO STORE LOCATION AND ATTRIBUTES ---------- //
 	public static String woeid = "";
-	public static String[] attributes;
+	public static ArrayList<String> attributes = new ArrayList<String>();
 	// ---------- END INITIALIZE HASMAPS TO STORE LOCATION AND ATTRIBUTES ---------- //
 
 
@@ -35,10 +36,14 @@ public class Wirl extends JavaPlugin
 				if (!(new File("plugins/weatherIRL/woeid.bin").exists())) {
 					new File("plugins/weatherIRL/woeid.bin").createNewFile();
 					SLAPI.save(woeid, "plugins/weatherIRL/woeid.bin");
+				} else {
+					woeid = SLAPI.load("plugins/weatherIRL/woeid.bin");
 				}
 				if (!(new File("plugins/weatherIRL/attributes.bin").exists())) {
 					new File("plugins/weatherIRL/attributes.bin").createNewFile();
 					SLAPI.save(attributes, "plugins/weatherIRL/attributes.bin");
+				} else {
+					attributes = SLAPI.load("plugins/weatherIRL/attributes.bin");
 				}
 			} else {
 				new File("plugins/weatherIRL").mkdir();
@@ -71,12 +76,6 @@ public class Wirl extends JavaPlugin
 
 		// Forecast
 		if (cmd.getName().equalsIgnoreCase("forecast")) {
-			try {
-				woeid = SLAPI.load("plugins/weatherIRL/woeid.bin");
-			} catch (Exception e) {
-				e.printStackTrace();
-				return false;
-			}
 			if (woeid.length()==0) {
 				sender.sendMessage("You must set a location first! Use /syncweather [location]");
 			} else {
@@ -84,24 +83,31 @@ public class Wirl extends JavaPlugin
 			}
 			return true;
 		}
-		
+
 		// SyncWeather
 		if (cmd.getName().equalsIgnoreCase("syncweather")) {
-			if (args.length==0) {
+			if (args.length==0 && woeid=="") {
 				sender.sendMessage("You must choose a location! Use /syncweather [location]");
 				return false;
 			}
-			String location = "";
-			for (int i=0; i<args.length; ++i) {
-				// append all arguments into one string (the location)
-				location+=args[i]+" ";
+			if (args.length==0) {
+				String location = "";
+				for (int i=0; i<args.length; ++i) {
+					// append all arguments into one string (the location)
+					location+=args[i]+" ";
+				}
+				try {
+					woeid = FindWOEID.findWOEID(location);
+					try {
+						SLAPI.save(woeid, "plugins/weatherIRL/woeid.bin");
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
-			try {
-				woeid = FindWOEID.findWOEID(location);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			sender.sendMessage("Starting weather syncing for "+location+".");
+			sender.sendMessage("Starting weather syncing for "+woeid+".");
 			syncing = true;
 			// START UP REPEATING SYNCING TASK
 			return true;
@@ -114,25 +120,39 @@ public class Wirl extends JavaPlugin
 				return false;
 			}
 			sender.sendMessage("Stopping weather syncing.");
-			woeid = "";        // find a better way to do this, make it so syncweather
-			syncing = false;   // doesn't require a location if one has already been stored?
+			syncing = false;
 			// STOP REPEATING SYNCING TASK
 			return true;
 		}
-		
+
 		// SyncAttributes
 		if (cmd.getName().equalsIgnoreCase("syncattributes")) {
 			if (args.length==0) {
 				sender.sendMessage("Must choose attributes!");
 				return false;
 			}
+			attributes = new ArrayList<String>();
 			for (int i=0; i<args.length; ++i) {   // append all chosen attributes (if they are valid)
-				// PUT CODE IN HERE
+				if (args[i].equalsIgnoreCase("rainandsnow")) {
+					attributes.add("rainandsnow");
+					sender.sendMessage("Precipitation will sync if/when syncing is enabled.");
+				} else if (args[i].equalsIgnoreCase("storms")) {
+					attributes.add("storms");
+					sender.sendMessage("Storms will sync if/when syncing is enabled.");
+				} else if (args[i].equalsIgnoreCase("clouds")) {
+					attributes.add("clouds");
+					sender.sendMessage("Clouds will sync if/when syncing is enabled.");
+				} else if (args[i].equalsIgnoreCase("daycycle")) {
+					attributes.add("daycycle");
+					sender.sendMessage("DayCycle will sync if/when syncing is enabled.");
+				} else {
+					sender.sendMessage("Attribute "+args[i]+" not found.  Available syncing options are rainandsnow, storms, clouds, and daycycle.");
+				}
 				return true;
 			}
 			return true;
 		}
-		
+
 		return false;
 	}
 	// --------- END HANDLE THE COMMANDS ---------- //
