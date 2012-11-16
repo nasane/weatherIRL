@@ -1,0 +1,46 @@
+name: weatherIRL
+main: com.ofallonminecraft.weatherIRL.Wirl
+version: 0.01
+
+commands:
+  syncweather:
+    description: Begin syncing weather with any Earth location.
+    usage: /syncweather [location]
+    permission: weatherIRL.syncweather
+    permission-message: You must be an op to use this command.
+  syncattributes:
+    description: Choose weather attributes to sync (rainandsnow, storms, clouds, daycycle).
+    usage: /syncattributes [attribute1(,attribute2,attribute3...)]
+    permission: weatherIRL.syncattributes
+    permission-message: You must be an op to use this command.
+  stopweathersync:
+    description: Stop syncing weather with an Earth location.
+    usage: /stopweathersync
+    permission: weatherIRL.stopweathersync
+    permission-message: You must be an op to use this command.
+  forecast:
+    description: See the forecast for the world.
+    usage: /forecast
+    permission: weatherIRL.forecast
+    permission-message: You must be an op to use this command.
+
+permissions:
+  weatherIRL.*:
+    description: Gives access to all weatherIRL commands
+    children:
+      weatherIRL.syncweather : true
+      weatherIRL.syncattributes : true
+      weatherIRL.stopweathersync : true
+      weatherIRL.forecast : true
+  weatherIRL.syncweather:
+    description: Begin syncing weather with any Earth location.
+    default: op
+  weatherIRL.syncattributes:
+    description: Choose weather attributes to sync (rainandsnow, storms, clouds, daycycle).
+    default: op
+  weatherIRL.stopweathersync:
+    description: Stop syncing weather with an Earth location.
+    default: op
+  weatherIRL.forecast:
+    description: See the forecast for the world.
+    default: op
