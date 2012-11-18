@@ -57,6 +57,15 @@ public class Wirl extends JavaPlugin
 		catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		// Weather Listener and Synchronous Repeating Task
+		int taskID = getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
+			public void run() {
+				if (syncing) {
+					String currentConditions = RSSReader.rssReader("Current Conditions:", woeid);
+				}
+			}
+		}, 1L, 60000L);
 	}
 
 	public void onDisable() // on disable, save the files
@@ -90,7 +99,7 @@ public class Wirl extends JavaPlugin
 				sender.sendMessage("You must choose a location! Use /syncweather [location]");
 				return false;
 			}
-			if (args.length==0) {
+			if (args.length!=0) {
 				String location = "";
 				for (int i=0; i<args.length; ++i) {
 					// append all arguments into one string (the location)
@@ -156,8 +165,7 @@ public class Wirl extends JavaPlugin
 		return false;
 	}
 	// --------- END HANDLE THE COMMANDS ---------- //
-
+	
 }
-
 
 
