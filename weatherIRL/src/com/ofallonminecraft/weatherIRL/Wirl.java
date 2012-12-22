@@ -63,6 +63,7 @@ public class Wirl extends JavaPlugin
 			public void run() {
 				if (syncing) {
 					String currentConditions = RSSReader.rssReader("Current Conditions:", woeid);
+					
 				}
 			}
 		}, 1L, 60000L);
@@ -118,7 +119,7 @@ public class Wirl extends JavaPlugin
 			}
 			sender.sendMessage("Starting weather syncing for "+woeid+".");
 			syncing = true;
-			// START UP REPEATING SYNCING TASK
+			// PERFORM ONE INITIAL SYNC
 			return true;
 		}
 
@@ -130,7 +131,6 @@ public class Wirl extends JavaPlugin
 			}
 			sender.sendMessage("Stopping weather syncing.");
 			syncing = false;
-			// STOP REPEATING SYNCING TASK
 			return true;
 		}
 
