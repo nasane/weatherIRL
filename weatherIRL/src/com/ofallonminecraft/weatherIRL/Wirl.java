@@ -4,26 +4,26 @@ package com.ofallonminecraft.weatherIRL;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Weather;
 import org.bukkit.plugin.java.JavaPlugin;
 
 
 public class Wirl extends JavaPlugin
 {
-	boolean syncing = false; // enable syncing on reload and startup?
-	// base this on previous condition of this variable?
 
 
 
-	// ---------- INITIALIZE HASMAPS TO STORE LOCATION AND ATTRIBUTES ---------- //
-	public static String woeid = "";
+	// ---------- INITIALIZE VARIABLES TO STORE INFORMATION ---------- //
+	public static String            woeid      = "";
 	public static ArrayList<String> attributes = new ArrayList<String>();
-	// ---------- END INITIALIZE HASMAPS TO STORE LOCATION AND ATTRIBUTES ---------- //
+	public static boolean           syncing    = false;
+	// ---------- END INITIALIZE VARIALBES TO STORE INFORMATION ---------- //
 
 
 
+	Weather w;  // needs a weather object?
 
 
 
@@ -45,12 +45,23 @@ public class Wirl extends JavaPlugin
 				} else {
 					attributes = SLAPI.load("plugins/weatherIRL/attributes.bin");
 				}
+				if (!(new File("plugins/weatherIRL/syncing.bin").exists())) {
+					new File("plugins/weatherIRL/syncing.bin").createNewFile();
+					SLAPI.save(syncing, "plugins/weatherIRL/syncing.bin");
+				} else {
+					syncing = SLAPI.load("plugins/weatherIRL/syncing.bin");
+					if (syncing) {
+						// TODO: do a single round of syncing
+					}
+				}
 			} else {
 				new File("plugins/weatherIRL").mkdir();
 				new File("plugins/weatherIRL/woeid.bin").createNewFile();
 				new File("plugins/weatherIRL/attributes.bin").createNewFile();
+				new File("plugins/weatherIRL/syncing.bin").createNewFile();
 				SLAPI.save(woeid, "plugins/weatherIRL/woeid.bin");
 				SLAPI.save(attributes, "plugins/weatherIRL/attributes.bin");
+				SLAPI.save(syncing, "plugins/weatherIRL/syncing.bin");
 			}
 			getLogger().info("weatherIRL has been enabled");
 		}
@@ -63,7 +74,8 @@ public class Wirl extends JavaPlugin
 			public void run() {
 				if (syncing) {
 					String currentConditions = RSSReader.rssReader("Current Conditions:", woeid);
-					
+					int conditionCode = ConditionToCode.conditionToCode(currentConditions);
+					Sync.sync(conditionCode, w);
 				}
 			}
 		}, 1L, 60000L);

@@ -1,7 +1,6 @@
 package com.ofallonminecraft.weatherIRL;
 
 import java.net.URL;
-
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.XmlReader;
