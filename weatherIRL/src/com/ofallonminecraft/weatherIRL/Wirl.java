@@ -3,7 +3,11 @@ package com.ofallonminecraft.weatherIRL;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.net.URL;
+import java.net.URLClassLoader;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Weather;
@@ -68,7 +72,33 @@ public class Wirl extends JavaPlugin
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
+		// adding needed external libraries -- stolen from fletch_to_99 (give him more credit)
+		try {
+			final File[] libs = new File[] {
+					new File(getDataFolder(), "commons-io-2.4.jar"),
+					new File(getDataFolder(), "jdom-1.1.3.jar"),
+					new File(getDataFolder(), "rome-1.0RC2.jar")};
+			for (final File lib : libs) {
+				if (!lib.exists()) {
+					JarUtils.extractFromJar(lib.getName(),
+							lib.getAbsolutePath());
+				}
+			}
+			for (final File lib : libs) {
+				if (!lib.exists()) {
+					getLogger().warning(
+							"There was a critical error loading My plugin! Could not find lib: "
+									+ lib.getName());
+					Bukkit.getServer().getPluginManager().disablePlugin(this);
+					return;
+				}
+				addClassPath(JarUtils.getJarUrl(lib));
+			}
+		} catch (final Exception e) {
+			e.printStackTrace();
+		}
+
 		// Weather Listener and Synchronous Repeating Task
 		int taskID = getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
 			public void run() {
@@ -79,6 +109,23 @@ public class Wirl extends JavaPlugin
 				}
 			}
 		}, 1L, 60000L);
+	}
+
+	// related to adding external libraries -- stolen from fletch_to_99 (give him more credit)
+	private void addClassPath(final URL url) throws IOException {
+		final URLClassLoader sysloader = (URLClassLoader) ClassLoader
+				.getSystemClassLoader();
+		final Class<URLClassLoader> sysclass = URLClassLoader.class;
+		try {
+			final Method method = sysclass.getDeclaredMethod("addURL",
+					new Class[] { URL.class });
+			method.setAccessible(true);
+			method.invoke(sysloader, new Object[] { url });
+		} catch (final Throwable t) {
+			t.printStackTrace();
+			throw new IOException("Error adding " + url
+					+ " to system classloader");
+		}
 	}
 
 	public void onDisable() // on disable, save the files
@@ -177,7 +224,7 @@ public class Wirl extends JavaPlugin
 		return false;
 	}
 	// --------- END HANDLE THE COMMANDS ---------- //
-	
+
 }
 
 
