@@ -28,10 +28,10 @@ public class CheckWeather extends BukkitRunnable {
 			e.printStackTrace();
 		}
 
-		if (syncing) { // store syncing, w, and woeid in a file??
+		if (syncing) {
 			String currentConditions = RSSReader.rssReader("Current Conditions:", woeid);
-			Sync.sync(currentConditions);
-			Bukkit.broadcast("Synced with current weather condition. Time is "+Bukkit.getServer().getWorlds().get(0).getTime(), Server.BROADCAST_CHANNEL_ADMINISTRATIVE);
+			Sync.sync(currentConditions, null);
+			//Bukkit.broadcast("Synced with current weather condition. Time is "+Bukkit.getServer().getWorlds().get(0).getTime(), Server.BROADCAST_CHANNEL_ADMINISTRATIVE);
 		}
 		
 		if (woeid.length()==0) {
