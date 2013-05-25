@@ -1,4 +1,4 @@
-# weatherIRL v0.01
+# weatherIRL v0.10
 
 Author: Nathan Bossart  
 Website: <http://ofallonminecraft.com/>  
@@ -30,7 +30,7 @@ Download the plugin from http://dev.bukkit.org/server-mods/weatherIRL.  Place in
   -Can sync precipitation and lightning with any location.  
   -Can stop weather syncing.  
   -Can view forecast.  
-  -Notes: /syncattributes is not yet ready, and the day/night cycle cannot yet by synced.  
+  -Notes: /syncattributes is not yet ready, and the day/night cycle cannot yet be synced.  
 
 ### v0.01  
   -Initial implementation.  
