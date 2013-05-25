@@ -1,6 +1,11 @@
 package com.ofallonminecraft.weatherIRL;
 
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import org.bukkit.Bukkit;
+
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.XmlReader;
@@ -24,6 +29,17 @@ public class RSSReader {
 			} else if (lookingFor.equalsIgnoreCase("Current Conditions:")) {
 				ret = feedString.substring(index+30, feedString.indexOf("<BR />\n", index+30));
 			}
+			
+			// find respective Minecraft time
+			// TODO: fix this!
+			int timeIndex = feedString.indexOf("titleEx.value=Conditions for"); 
+			String timeString = feedString.substring(feedString.indexOf(" at", timeIndex+30)+3, feedString.indexOf('\n', timeIndex+1)-4); 
+			SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm aa");
+			Date time = timeFormat.parse(timeString);
+			long timeInt = ((time.getTime()/1000 - 8*3600)*(15/54))-6000;
+			if (timeInt<0) timeInt+=24000;
+			Bukkit.getServer().getWorlds().get(0).setTime(timeInt);
+			
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();

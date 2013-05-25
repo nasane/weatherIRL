@@ -8,10 +8,12 @@ import java.util.ArrayList;
 import java.net.URL;
 import java.net.URLClassLoader;
 import org.bukkit.Bukkit;
+import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Weather;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 
 
 public class Wirl extends JavaPlugin
@@ -23,6 +25,7 @@ public class Wirl extends JavaPlugin
 	public static String            woeid      = "";
 	public static ArrayList<String> attributes = new ArrayList<String>();
 	public static boolean           syncing    = false;
+	public static String            forecast   = "An error occured.";
 	// ---------- END INITIALIZE VARIALBES TO STORE INFORMATION ---------- //
 
 
@@ -54,18 +57,31 @@ public class Wirl extends JavaPlugin
 					SLAPI.save(syncing, "plugins/weatherIRL/syncing.bin");
 				} else {
 					syncing = SLAPI.load("plugins/weatherIRL/syncing.bin");
-					if (syncing) {
-						// TODO: do a single round of syncing
-					}
+				}
+				if (!(new File("plugins/weatherIRL/weather.bin").exists())) {
+					new File("plugins/weatherIRL/weather.bin").createNewFile();
+					SLAPI.save(w, "plugins/weatherIRL/weather.bin");
+				} else {
+					w = SLAPI.load("plugins/weatherIRL/weather.bin");
+				}
+				if (!(new File("plugins/weatherIRL/forecast.bin").exists())) {
+					new File("plugins/weatherIRL/forecast.bin").createNewFile();
+					SLAPI.save(forecast, "plugins/weatherIRL/forecast.bin");
+				} else {
+					forecast = SLAPI.load("plugins/weatherIRL/forecast.bin");
 				}
 			} else {
 				new File("plugins/weatherIRL").mkdir();
 				new File("plugins/weatherIRL/woeid.bin").createNewFile();
 				new File("plugins/weatherIRL/attributes.bin").createNewFile();
 				new File("plugins/weatherIRL/syncing.bin").createNewFile();
+				new File("plugins/weatherIRL/weather.bin").createNewFile();
+				new File("plugins/weatherIRL/forecast.bin").createNewFile();
 				SLAPI.save(woeid, "plugins/weatherIRL/woeid.bin");
 				SLAPI.save(attributes, "plugins/weatherIRL/attributes.bin");
 				SLAPI.save(syncing, "plugins/weatherIRL/syncing.bin");
+				SLAPI.save(w, "plugins/weatherIRL/weather.bin");
+				SLAPI.save(forecast, "plugins/weaterIRL/forecast.bin");
 			}
 			getLogger().info("weatherIRL has been enabled");
 		}
@@ -88,7 +104,7 @@ public class Wirl extends JavaPlugin
 			for (final File lib : libs) {
 				if (!lib.exists()) {
 					getLogger().warning(
-							"There was a critical error loading My plugin! Could not find lib: "
+							"There was a critical error loading weatherIRL! Could not find lib: "
 									+ lib.getName());
 					Bukkit.getServer().getPluginManager().disablePlugin(this);
 					return;
@@ -99,16 +115,9 @@ public class Wirl extends JavaPlugin
 			e.printStackTrace();
 		}
 
-		// Weather Listener and Synchronous Repeating Task
-		int taskID = getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
-			public void run() {
-				if (syncing) {
-					String currentConditions = RSSReader.rssReader("Current Conditions:", woeid);
-					int conditionCode = ConditionToCode.conditionToCode(currentConditions);
-					Sync.sync(conditionCode, w);
-				}
-			}
-		}, 1L, 60000L);
+		// sync the weather every five minutes
+		BukkitTask syncWeather = new CheckWeather(this).runTaskTimer(this, 0, 6000);
+
 	}
 
 	// related to adding external libraries -- stolen from fletch_to_99 (give him more credit)
@@ -145,11 +154,13 @@ public class Wirl extends JavaPlugin
 
 		// Forecast
 		if (cmd.getName().equalsIgnoreCase("forecast")) {
-			if (woeid.length()==0) {
-				sender.sendMessage("You must set a location first! Use /syncweather [location]");
-			} else {
-				sender.sendMessage(RSSReader.rssReader("Forecast:", woeid));
+			String forecast = "An error occured.";
+			try {
+				forecast = SLAPI.load("plugins/weatherIRL/forecast.bin");
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
+			sender.sendMessage(forecast);
 			return true;
 		}
 
@@ -178,7 +189,31 @@ public class Wirl extends JavaPlugin
 			}
 			sender.sendMessage("Starting weather syncing for "+woeid+".");
 			syncing = true;
+
 			// PERFORM ONE INITIAL SYNC
+			try {
+				w       = SLAPI.load("plugins/weatherIRL/weather.bin");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			String currentConditions = RSSReader.rssReader("Current Conditions:", woeid);
+			Sync.sync(currentConditions);
+			Bukkit.broadcast("Synced with current weather condition.", Server.BROADCAST_CHANNEL_ADMINISTRATIVE);
+			if (woeid.length()==0) {
+				forecast = "You must set a location first! Use /syncweather [location]";
+			} else {
+				forecast = RSSReader.rssReader("Forecast:", woeid);
+			}
+			try {
+				SLAPI.save(syncing,  "plugins/weatherIRL/syncing.bin");
+				SLAPI.save(woeid,    "plugins/weatherIRL/woeid.bin");
+				SLAPI.save(w,        "plugins/weatherIRL/weather.bin");
+				SLAPI.save(forecast, "plugins/weatherIRL/forecast.bin");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			// END INITIAL SYNC
+			
 			return true;
 		}
 
@@ -190,6 +225,9 @@ public class Wirl extends JavaPlugin
 			}
 			sender.sendMessage("Stopping weather syncing.");
 			syncing = false;
+
+			// TODO: reset weather?
+
 			return true;
 		}
 

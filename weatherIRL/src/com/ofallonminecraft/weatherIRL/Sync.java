@@ -1,112 +1,120 @@
 package com.ofallonminecraft.weatherIRL;
 
-import org.bukkit.entity.Weather;
+import org.bukkit.Bukkit;
+import org.bukkit.Server;
 
 public class Sync {
 
-	public static void sync(int code, Weather w) {
-		
-		switch (code) {
-		case 0:; // tornado
-		break;
-		case 1:; // tropical storm
-		break;
-		case 2:; // hurricane
-		break;
-		case 3:; // severe thunderstorms
-		break;
-		case 4:; // thunderstorms
-		break;
-		case 5:; // mixed rain and snow
-		break;
-		case 6:; // mixed rain and sleet
-		break;
-		case 7:; // mixed snow and sleet
-		break;
-		case 8:; // freezing drizzle
-		break;
-		case 9:; // drizzle
-		break;
-		case 10:; // freezing rain
-		break;
-		case 11:; // showers
-		break;
-		case 12:; // showers
-		break;
-		case 13:; // snow flurries
-		break;
-		case 14:; // light snow showers
-		break;
-		case 15:; // blowing snow
-		break;
-		case 16:; // snow
-		break;
-		case 17:; // hail
-		break;
-		case 18:; // sleet
-		break;
-		case 19:; // dust
-		break;
-		case 20:; // foggy
-		break;
-		case 21:; // haze
-		break;
-		case 22:; // smoky
-		break;
-		case 23:; // blustery
-		break;
-		case 24:; // windy
-		break;
-		case 25:; // cold
-		break;
-		case 26:; // cloudy
-		break;
-		case 27:; // mostly cloudy (night)
-		break;
-		case 28:; // mostly cloudy (day)
-		break;
-		case 29:; // partly cloudy (night)
-		break;
-		case 30:; // partly cloudy (day)
-		break;
-		case 31:; // clear (night)
-		break;
-		case 32:; // sunny
-		break;
-		case 33:; // fair (night)
-		break;
-		case 34:; // fair (day)
-		break;
-		case 35:; // mixed rain and hail
-		break;
-		case 36:; // hot
-		break;
-		case 37:; // isolated thunderstorms
-		break;
-		case 38:; // scattered thunderstorms
-		break;
-		case 39:; // scattered thunderstorms
-		break;
-		case 40:; // scattered showers
-		break;
-		case 41:; // heavy snow
-		break;
-		case 42:; // scattered snow showers
-		break;
-		case 43:; // heavy snow
-		break;
-		case 44:; // partly cloudy
-		break;
-		case 45:; // thundershowers
-		break;
-		case 46:; // snow showers
-		break;
-		case 47:; // isolated thundershowers
-		break;
-		case 3200:; // not available
-		break;
+	public static void sync(String cc) {
+
+		cc = cc.substring(0, cc.indexOf(','));
+
+		boolean precipitating = false;
+		boolean thundering    = false;
+
+		if (cc.equalsIgnoreCase("tornado")) {
+			precipitating = true;
+			thundering    = true;
+		} else if (cc.equalsIgnoreCase("tropical storm")) {
+			precipitating = true;
+			thundering    = true;
+		} else if (cc.equalsIgnoreCase("hurricane")) {
+			precipitating = true;
+			thundering    = true;
+		} else if (cc.equalsIgnoreCase("severe thunderstorms")) {
+			precipitating = true;
+			thundering    = true;
+		} else if (cc.equalsIgnoreCase("thunderstorms")) {
+			precipitating = true;
+			thundering    = true;
+		} else if (cc.equalsIgnoreCase("mixed rain and snow")) {
+			precipitating   = true;
+		} else if (cc.equalsIgnoreCase("mixed rain and sleet")) {
+			precipitating   = true;
+		} else if (cc.equalsIgnoreCase("mixed snow and sleet")) {
+			precipitating   = true;
+		} else if (cc.equalsIgnoreCase("freezing drizzle")) {
+			precipitating   = true;
+		} else if (cc.equalsIgnoreCase("drizzle")) {
+			precipitating   = true;
+		} else if (cc.equalsIgnoreCase("freezing rain")) {
+			precipitating   = true;
+		} else if (cc.equalsIgnoreCase("showers")) {
+			precipitating   = true;
+		} else if (cc.equalsIgnoreCase("snow flurries")) {
+
+		} else if (cc.equalsIgnoreCase("light snow showers")) {
+			precipitating   = true;
+		} else if (cc.equalsIgnoreCase("blowing snow")) {
+			precipitating   = true;
+		} else if (cc.equalsIgnoreCase("snow")) {
+			precipitating   = true;
+		} else if (cc.equalsIgnoreCase("hail")) {
+			precipitating   = true;
+		} else if (cc.equalsIgnoreCase("sleet")) {
+			precipitating   = true;
+		} else if (cc.equalsIgnoreCase("dust")) {
+
+		} else if (cc.equalsIgnoreCase("foggy")) {
+
+		} else if (cc.equalsIgnoreCase("haze")) {
+
+		} else if (cc.equalsIgnoreCase("smoky")) {
+
+		} else if (cc.equalsIgnoreCase("blustery")) {
+
+		} else if (cc.equalsIgnoreCase("windy")) {
+
+		} else if (cc.equalsIgnoreCase("cold")) {
+
+		} else if (cc.equalsIgnoreCase("cloudy")) {
+
+		} else if (cc.equalsIgnoreCase("mostly cloudy")) {
+
+		} else if (cc.equalsIgnoreCase("partly cloudy")) {
+
+		} else if (cc.equalsIgnoreCase("clear")) {
+
+		} else if (cc.equalsIgnoreCase("sunny")) {
+
+		} else if (cc.equalsIgnoreCase("fair")) {
+
+		} else if (cc.equalsIgnoreCase("mixed rain and hail")) {
+			precipitating   = true;
+		} else if (cc.equalsIgnoreCase("hot")) {
+
+		} else if (cc.equalsIgnoreCase("isolated thunderstorms")) {
+			precipitating = true;
+			thundering    = true;
+		} else if (cc.equalsIgnoreCase("scattered thunderstorms")) {
+			precipitating = true;
+			thundering    = true;
+		} else if (cc.equalsIgnoreCase("scattered showers")) {
+			precipitating   = true;
+		} else if (cc.equalsIgnoreCase("heavy snow")) {
+			precipitating   = true;
+		} else if (cc.equalsIgnoreCase("scattered snow showers")) {
+			precipitating   = true;
+		} else if (cc.equalsIgnoreCase("thundershowers")) {
+			precipitating = true;
+			thundering    = true;
+		} else if (cc.equalsIgnoreCase("snow showers")) {
+			precipitating   = true;
+		} else if (cc.equalsIgnoreCase("light rain")) {
+			precipitating  = true;
+		} else if (cc.contains("Thunderstorm")) {
+			precipitating = true;
+			thundering = true;
+		} else if (cc.equalsIgnoreCase("mist")) {
+			precipitating = true;
+		} else {
+			Bukkit.broadcast("Oops, we haven't programmed in the conditions for "
+					+cc+". Let us know!", Server.BROADCAST_CHANNEL_USERS);
 		}
-		
+
+		// based on variables defined above, change weather accordingly
+		Bukkit.getServer().getWorlds().get(0).setStorm(precipitating);
+		Bukkit.getServer().getWorlds().get(0).setThundering(thundering);
+
 	}
-	
 }
