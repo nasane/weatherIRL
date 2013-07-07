@@ -93,6 +93,10 @@ public class Sync {
 			thundering    = true;
 		} else if (cc.equalsIgnoreCase("mist")) {
 			precipitating = true;
+		} else if (cc.equalsIgnoreCase("rain")) {
+			precipitating = true;
+		} else if (cc.contains("drizzle") || cc.contains("Drizzle")) {
+			precipitating = true;
 		} else {
 			if (sender!=null) {
 				sender.sendMessage("Oops, we haven't programmed in the conditions for "
